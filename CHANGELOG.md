@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.0.3 (2026-09-10)
+
+### 关键修复：API 102 Hooker 接口方法名错误导致全部 Hook 失效
+
+- **症状**：v1.0.2 起模块能正常加载、Hook 显示"安装成功"，但运行时每次调用抛
+  `AbstractMethodError: XposedInterface$Hooker.intercept(XposedInterface$Chain)`，
+  被 `exceptionMode=protective` 静默吞掉 → 所有地图去广告全部无效（高德 16.x/17.x、
+  Android 17 设备均有用户反馈；实际影响所有 Android 版本）
+- **根因**：编译期 stub 中 `XposedInterface.Hooker` 的抽象方法被误写为 `hook(Chain)`，
+  真实 libxposed API 102 为 `intercept(Chain)`。匿名类实现可正常通过编译，
+  框架运行时按真实接口回调 `intercept()` 找不到实现 → AbstractMethodError
+- **修复**：stub 与全部 8 处匿名 Hooker 实现（H.VOID/H.FALSE/H.TRUE、
+  MainHook 自检、AmapHooks 开屏闸门、BmapHooks 遮罩摘除/开屏容器、Sweeper）统一改为
+  `intercept(Chain)`；与上游 `io.github.libxposed:api:102` 逐签名核对
+- 真机回归：高德 hook 命中恢复、日志无 AbstractMethodError
+
 ## v1.0.2 (2026-09-08)
 
 ### 框架重构：legacy → libxposed API 102
