@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0.4 (2026-09-10)
+
+- 重新发布：修复 v1.0.3 发布说明在收录站点的编码乱码（发布流程按非 UTF-8 编码传输请求体所致）
+- 代码与 v1.0.3 完全一致，无功能变更；已装 v1.0.3 用户可自愿更新
+
 ## v1.0.3 (2026-09-10)
 
 ### 关键修复：API 102 Hooker 接口方法名错误导致全部 Hook 失效
@@ -14,7 +19,40 @@
 - **修复**：stub 与全部 8 处匿名 Hooker 实现（H.VOID/H.FALSE/H.TRUE、
   MainHook 自检、AmapHooks 开屏闸门、BmapHooks 遮罩摘除/开屏容器、Sweeper）统一改为
   `intercept(Chain)`；与上游 `io.github.libxposed:api:102` 逐签名核对
+- 顺带：`hookAll` 跳过 abstract 方法（此前对抽象方法尝试 hook 必然
+  `IllegalArgumentException: Cannot hook abstract methods` 并刷 hook_error 日志）
 - 真机回归：高德 hook 命中恢复、日志无 AbstractMethodError
+
+### 百度地图启动白屏/卡开屏修复（本批真机回归发现）
+
+- 背景：v1.0.2 的全部 Hooker 因 AbstractMethodError **从未实际执行**，其中
+  "开屏根治"等新增改动未经真机验证；v1.0.3 修复 Hooker 方法名后整套 Hook
+  首次真实运行，在 21.20.30 上暴露两类启动问题：
+  白屏（单次启动 30+ 个 `SplashViewContainer` 被盲杀）与
+  卡品牌开屏（`SplashAdManager.G/H/n/m`、`SplashAdProvider.k/m` 吞调用
+  拦截开屏必经路径，完成事件永不到达）
+- 处置：
+  - 删除 `SplashViewContainer` 移除 Hook 及 ViewKiller 类名盲杀（多实例复用容器）
+  - 删除 `HomeSplashPresenter.n` 遮罩摘除
+  - 放开 `SplashAdManager.G/H/n/m`、`SplashAdProvider.k/m` 的 VOID 吞调用；
+    恢复 `HomeMidBannerPresenter.onCreateView`（返回 View，VOID 会产生 null）
+  - 保留 F/z 布尔闸门（FALSE=不等广告快速进首页）+ ADN Loader + BMAd 数据层拦截
+  - 真机 21.20.30 回归：约 2s 进首页，无白屏/卡屏，首屏无广告
+- 观测增强：`hookMethod` 增加首火日志（每个 Hook 首次触发记录 `HIT <id>`），
+  便于用户反馈时定位"Hook 已装但未触发"类问题
+
+### 百度 21.20.50（versionCode 1645）适配
+
+- 静态分析（apktool smali）确认：`SplashAdManager` Kotlin 重写后 `F()/z()/G()/H()`
+  仍在，但自营运营开屏（`fetchBizSplashAd`，如淘宝闪购）**不再经过 F/z 闸门**，
+  数据层拦截对其失效；该 App 打包 ADN SDK：优量汇（com.qq.e）、穿山甲
+  （com.bytedance.sdk.openadsdk）、sigmob、kwai
+- 新增 `SplashViewContainer.addView` 探测 Hooker：该容器为品牌/广告复用 FrameLayout
+  （21.20.50 已不覆写 `onAttachedToWindow`——v1.0.2 实际误 Hook 了 `android.view.View`
+  的全局 attach，即白屏元凶）；新增子树命中打包 AD SDK 类名特征或「跳过」按钮时
+  整个子树 GONE，广告倒计时由 Handler 驱动照常完成（onAdFinish/onSkip 正常回调），
+  品牌层不受影响 → 不白屏、不卡开屏、广告零曝光
+- 真机 21.20.50 回归：启动约 1-2s 进首页，无白屏/卡屏，首页信息流/中部横幅/黄条无广告
 
 ## v1.0.2 (2026-09-08)
 
