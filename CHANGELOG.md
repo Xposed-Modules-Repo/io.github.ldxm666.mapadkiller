@@ -18,6 +18,22 @@
   `Lio/github/ldxm666/bmapclean/MainHook;` 与 `Lio/github/ldxm666/mapadkiller/TmapHooks;`
   必须存在，缺一个就 fail the build；精简构建也把前者加进 required 列表，
   并把原来的「整包禁用」改成**逐类禁用**（允许空桩，不允许任何真正能挂钩百度的类）。
+
+### 同一批的第二个回归：设置页「百度」那一页读写全挂
+
+用户反馈：设置页里百度那一页怎么点都提示 **「LSPosed 服务未连接」**。
+
+同一个成因的第二个漏接。`bmapclean.App` 的注释写着"由 `io.github.ldxm666.mapclean.App`
+（真正的 Application）驱动"，但那三处调用**从来没接上** —— 于是 `bmapclean.App.service`
+恒为 null：百度组（`bmapclean_config`）读开关永远返回缺省值、写开关永远返回 false，
+UI 就把它显示成"服务未连接"；`bmapclean.App.app()` 也为 null，诊断卡永远是"尚未收到回报"。
+
+修复：`mapclean.App` 的 `onCreate` / `bindService` / `diedService` 补上
+`bmapclean.App.attach / onBind / onDied`；精简构建用 no-op 桩类补位；
+`app/build.ps1` 的护栏把 `Lio/github/ldxm666/bmapclean/App;` 纳入必查。
+
+实机：`I/MapCleanApp: onServiceBind ok` 之后紧跟着
+`I/BMapCleanApp: onServiceBind ok (driven by mapclean.App)`（修复前这一行不存在）。
 - 实机验证：`baidu_adapter version=22.0.0 mode=capabilities` →
   **`event=install_done pkg=com.baidu.BaiduMap ok=60 miss=0`**。
 - 高德四件修复无回归；签名与 2.1.2 起所有版本相同（`cbecdaeb…54ed`），可就地覆盖安装。
