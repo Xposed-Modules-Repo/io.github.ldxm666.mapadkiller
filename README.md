@@ -1,17 +1,18 @@
 # MapAdKiller
 
-高德／百度地图广告精简与界面定制模块，基于 **libxposed API 102**。当前正式版 **2.1.4（版本码 214）**。
+高德／百度地图广告精简与界面定制模块，基于 **libxposed API 102**。当前正式版 **2.1.5（版本码 215）**。
 
-[![正式版](https://img.shields.io/badge/version-2.1.4-blue)](https://github.com/Xposed-Modules-Repo/io.github.ldxm666.mapadkiller/releases/tag/214-2.1.4) ![框架接口](https://img.shields.io/badge/libxposed-API_102-green) [![许可证](https://img.shields.io/badge/license-GPL--3.0-orange)](LICENSE)
+[![正式版](https://img.shields.io/badge/version-2.1.5-blue)](https://github.com/Xposed-Modules-Repo/io.github.ldxm666.mapadkiller/releases/tag/215-2.1.5) ![框架接口](https://img.shields.io/badge/libxposed-API_102-green) [![许可证](https://img.shields.io/badge/license-GPL--3.0-orange)](LICENSE)
 
 目录：[版本变化](#相比-212-的主要变化) · [免 root 内置版](#免-root-内置版) · [功能范围](#功能范围) · [安装与范围](#安装与范围) · [配置迁移](#配置与升级) · [问题反馈](#常见问题与反馈)
 
-[下载模块](https://github.com/Xposed-Modules-Repo/io.github.ldxm666.mapadkiller/releases/tag/214-2.1.4) · [免 root 内置版下载](https://github.com/ldxm666/MapAdKiller/releases/tag/v2.1.4) · [完整更新公告](https://github.com/ldxm666/MapAdKiller/blob/master/docs/RELEASE-2.1.4.md) · [更新日志](CHANGELOG.md)
+[下载模块](https://github.com/Xposed-Modules-Repo/io.github.ldxm666.mapadkiller/releases/tag/215-2.1.5) · [免 root 内置版下载](https://github.com/ldxm666/MapAdKiller/releases/tag/v2.1.5) · [完整更新公告](https://github.com/ldxm666/MapAdKiller/blob/master/docs/RELEASE-2.1.5.md) · [更新日志](CHANGELOG.md)
 
 ## 相比 2.1.2 的主要变化
 
 **本版新增免 root 内置版**（见下一节）：不需要 root、不需要框架，装完就能用。本页下载的是**普通模块 APK**，两者同一套源码，修复内容完全一致。
 
+- **百度地图修复（2.1.5）**：2.1.4 里百度那一半完全没被转发到，一个钩子都没装。根因是有人为了另一个构建把共享源码里的转发删了；现已恢复，并加了构建期护栏。
 - **「设置家」修复**：那条行由高德自己绘制、模块只负责放行，而首页面板实例被高德缓存复用，改开关不会重建。现在**写完立刻生效**（原地重建，不用退出重进），并且默认开启。
 - **工具开关修复**：高德自己的工具槽只有两项，模块以前**只会删不会加**。现在按“已开启”自动补齐空位（首页工具栏实测只有 5 格），且只改首页那一份数据，不动高德自己的存储。
 - **「更多工具」独立开关**：从「工具 → 其他」一百多个工具里提到**「首页」分组**，标签「更多工具入口」，工具分类顶部另加 5 格上限说明。
@@ -29,12 +30,12 @@
 - 悬浮球是应用内浮层，**不申请任何权限**；退出高德即消失。
 - **只处理高德**，不含百度 / 腾讯（代码在打包前就被删掉，不是运行时跳过）。
 - ⚠️ 它用 LSPatch 重新签名，**与官方高德签名不同**：从官方版换过来必须先卸载官方高德（会清除登录态与离线地图）；已经是 2.1.3 内置版的可以直接覆盖安装。
-- 下载：<https://github.com/ldxm666/MapAdKiller/releases/tag/v2.1.4> 的 `AMap-2.1.4-rootless-integrated.apk`。
+- 下载：<https://github.com/ldxm666/MapAdKiller/releases/tag/v2.1.5> 的 `AMap-2.1.5-rootless-integrated.apk`。
 - ⚠️ 它会被**安全中心 / 病毒扫描报红，这是误报**：包里内嵌了一个完整 APK（原版高德）、运行时从 assets 加载 dex、并内置签名绕过 —— 三点都来自重打包机制本身，无法通过"清理"消除。介意的话就用本页的模块版，它不改动任何地图安装包，不会被报毒。
 
 ## 安装与范围
 
-安装 Release 中的 `MapClean-lsp-v2.1.4.apk`，已有用户可覆盖升级。在支持 libxposed API 102 的框架中启用模块，勾选需要处理的地图作用域，再进入模块设置调整开关，修改后强停对应地图并重新打开。
+安装 Release 中的 `MapClean-lsp-v2.1.5.apk`，已有用户可覆盖升级。在支持 libxposed API 102 的框架中启用模块，勾选需要处理的地图作用域，再进入模块设置调整开关，修改后强停对应地图并重新打开。
 
 多数“显示……”设置为开启显示、关闭隐藏；标为“关闭……”或“去除……”的设置则是开启去除规则。工具栏总开关控制整个列表，“仅显示已开启工具”开启后只保留明确选中的工具，未知下发工具不自动加入。使用该模式时请先开启工具栏，再选中步行、骑行等所需项；要继续进入完整目录，请保留“更多工具”。**首页工具栏只有 5 格**，开第 6 个工具不会出现在那里。
 

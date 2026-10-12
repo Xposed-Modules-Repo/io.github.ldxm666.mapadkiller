@@ -1,3 +1,29 @@
+## v2.1.5（versionCode 215）— 修复百度地图完全失效
+
+发布日期：2026-10-12。版本码：215。对比基线 v2.1.4（版本码 214）。
+
+2.1.4 的模块对百度地图**完全没有反应**：开关照写、界面照旧，logcat 里连一条 `BMapClean` 都没有。
+腾讯与高德不受影响。
+
+**根因**：一个 APK 只能声明一个 Xposed 入口（`META-INF/xposed/java_init.list`），
+百度、腾讯两半只能靠共享源码里的**显式转发**到达。之前为了让「只并入高德」的免 root
+精简构建能编译（它会把整个 `bmapclean` 包删掉），这两处转发被**直接从共享源码里删掉了** ——
+精简构建过了，完整模块的百度跟着一起失效：`H.module` 恒为 null，
+每次挂钩都以 `miss <id> (module null)` 失败，装了等于没装。
+
+- 恢复 `mapclean.MainHook.onModuleLoaded` 与 `mapadkiller.MainHook.onPackageReady` 两处转发。
+- 精简构建改为**生成 no-op 桩类**（`tools/build_variant.py` 的 STUBS 新增 `bmapclean/MainHook`），
+  而不是把调用从共享源码里拿掉。
+- 新增构建期护栏：`app/build.ps1` 在 DEX 里直接校验
+  `Lio/github/ldxm666/bmapclean/MainHook;` 与 `Lio/github/ldxm666/mapadkiller/TmapHooks;`
+  必须存在，缺一个就 fail the build；精简构建也把前者加进 required 列表，
+  并把原来的「整包禁用」改成**逐类禁用**（允许空桩，不允许任何真正能挂钩百度的类）。
+- 实机验证：`baidu_adapter version=22.0.0 mode=capabilities` →
+  **`event=install_done pkg=com.baidu.BaiduMap ok=60 miss=0`**。
+- 高德四件修复无回归；签名与 2.1.2 起所有版本相同（`cbecdaeb…54ed`），可就地覆盖安装。
+
+---
+
 ## v2.1.4（versionCode 214）— 免 root 内置版 + 四个「开关无效」修复
 
 发布日期：2026-10-12。版本码：214。对比基线 **v2.1.2（版本码 212）**。
