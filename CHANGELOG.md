@@ -1,3 +1,45 @@
+## v2.2.0（versionCode 220）— 腾讯地图支持与百度 22.0.50 适配
+
+发布日期：2026-10-15。版本码：220。对比基线 v2.1.5（版本码 215）。
+
+本版把腾讯地图正式纳入支持范围（`com.tencent.map` 11.7.0），并把百度适配推到 22.0.50。
+免 root 内置版同步扩到高德、百度、腾讯三个独立产物，说明与下载见
+[主项目 v2.2.0 发布页](https://github.com/ldxm666/MapAdKiller/releases/tag/v2.2.0)。
+
+### 新增
+
+- 腾讯地图支持（`com.tencent.map` 11.7.0）：底部入口栏、工具宫格、我的页、地图图标等开关。
+- 百度地图工具宫格逐格开关，覆盖 22.0.50 新增的智行、新能源、停车助手、新手导航、现金签到、测距等文案。
+
+### 修复
+
+- 百度 22.0.50：`HomeMapOperatePresenter.onEventMainThread` 的事件参数类混淆名从 `xe.c` 迁移到 `fe.c`，旧名仍存在但无该重载，导致一个钩子静默 `miss`。已修正。
+- 百度面板上滑留大片空白：把面板展开上限与收起位一起夹到剩余内容高度（`DrawerBehavior.extendHeight` / `mMinOffset` / `mPeekHeight` / `mMaxOffset`），空白从 686px 降到 80px。
+- 百度 `EXPANDED` 状态整屏闪白：钉死态把 `EXPANDED` 归一为 `COLLAPSED`（几何不变），27 帧里白屏帧从 4 降到 0。
+- 百度冷启动夹不上（写字段需要第 3 次布局，冷启动只有 2 次）：稳定判定后补一次有界 `requestLayout()`。
+- 腾讯「服务未连接」：`EmbeddedSettingsPolicy.isHostPackage()` 的宿主白名单漏了 `com.tencent.map`。
+- 腾讯底部入口栏隐藏失效：钩子比 UI 装配晚 0.85 秒，`Instrumentation#callApplicationOnCreate` 改为模块加载即挂；`hidden()` 里的总开关判断不再吞掉启动时的初始页选择。
+- 腾讯工具宫格默认只显示一排：钉住初始展开值使三排常驻。
+- 腾讯拖动时 ANR：模块在高频路径里做反射、触发宿主日志、拼 220 字符字符串，改为热路径零反射／零分配／零日志。
+- `Spec.mergeDiscovered()` 此前无调用者，设置页从未真正合并 hook 上报的工具文案。已接通上报与落盘链路。
+- `build_variant.py`：新增构建期不变量，校验变体宿主包被 DEX 内的宿主白名单接受。
+
+### 模块产物
+
+| 文件 | 大小 | SHA-256 |
+| --- | --- | --- |
+| `MapClean-lsp-v2.2.0.apk` | 4,326,869 B | `290a03b09f2bfa14fb8225ed61316b34f7d339d68235dba7463b03a1a5671e4d` |
+
+免 root 内置版（高德 / 百度 / 腾讯三个独立 APK）在主项目发布页：
+<https://github.com/ldxm666/MapAdKiller/releases/tag/v2.2.0>。
+
+### 已知限制
+
+- 百度面板仍保留约 80px 空白带（原生 `mHideHeight` 几何下限）。
+- 腾讯工具宫格第 3 档（完全展开）未取得运行时截图验证，自动化上滑只到中档。
+- 腾讯 `extendHeight` 在官方包内无调用点，模块写入该字段生效，但与官方后续版本兼容性未知。
+
+---
 ## v2.1.5（versionCode 215）— 修复百度地图完全失效
 
 发布日期：2026-10-12。版本码：215。对比基线 v2.1.4（版本码 214）。
