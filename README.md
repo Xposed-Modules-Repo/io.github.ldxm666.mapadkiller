@@ -1,14 +1,30 @@
 # MapAdKiller
 
-高德／百度／腾讯地图广告精简与界面定制模块，基于 **libxposed API 102**。当前正式版 **2.2.0（版本码 220）**。
+高德／百度／腾讯地图广告精简与界面定制模块，基于 **libxposed API 102**。当前正式版 **2.2.1（版本码 221）**。
 
-[![正式版](https://img.shields.io/badge/version-2.2.0-blue)](https://github.com/Xposed-Modules-Repo/io.github.ldxm666.mapadkiller/releases/tag/220-2.2.0) ![框架接口](https://img.shields.io/badge/libxposed-API_102-green) [![许可证](https://img.shields.io/badge/license-GPL--3.0-orange)](LICENSE)
+[![正式版](https://img.shields.io/badge/version-2.2.1-blue)](https://github.com/Xposed-Modules-Repo/io.github.ldxm666.mapadkiller/releases/tag/221-2.2.1) ![框架接口](https://img.shields.io/badge/libxposed-API_102-green) [![许可证](https://img.shields.io/badge/license-GPL--3.0-orange)](LICENSE)
 
-目录：[版本变化](#相比-215-的主要变化) · [免 root 内置版](#免-root-内置版) · [功能范围](#功能范围) · [安装与范围](#安装与范围) · [配置迁移](#配置与升级) · [问题反馈](#常见问题与反馈)
+目录：[版本变化](#相比-220-的主要变化) · [免 root 内置版](#免-root-内置版) · [功能范围](#功能范围) · [安装与范围](#安装与范围) · [配置迁移](#配置与升级) · [问题反馈](#常见问题与反馈)
 
-[下载模块](https://github.com/Xposed-Modules-Repo/io.github.ldxm666.mapadkiller/releases/tag/220-2.2.0) · [免 root 内置版下载](https://github.com/ldxm666/MapAdKiller/releases/tag/v2.2.0) · [完整更新公告](https://github.com/ldxm666/MapAdKiller/releases/tag/v2.2.0) · [更新日志](CHANGELOG.md)
+[下载模块](https://github.com/Xposed-Modules-Repo/io.github.ldxm666.mapadkiller/releases/tag/221-2.2.1) · [免 root 内置版下载](https://github.com/ldxm666/MapAdKiller/releases/tag/v2.2.1) · [完整更新公告](https://github.com/ldxm666/MapAdKiller/releases/tag/v2.2.1) · [更新日志](CHANGELOG.md)
 
-## 相比 2.1.5 的主要变化
+## 相比 2.2.0 的主要变化
+
+**本版补齐「自带默认配置」**：全新安装后自动应用一次内置默认值，并修正 2.2.0 遗留的版本号与产物名问题。
+
+- **自带默认配置（新增）**：模块内置一份 JSON（`res/raw/default_config.json`），全新安装后自动应用一次。
+- 格式与「更多 → 导出 JSON 配置」完全一致，可直接替换；`null` 键表示「未设置、保持缺省」，应用时跳过，不会写成 `false`。
+- 只应用一次：标记键 `_defaults_applied` 存在即跳过，不覆盖用户改动。设置页「恢复默认配置」可手动再应用一次，忽略标记，有二次确认。
+- 免 root 内置版按宿主包名只应用本机那一家的配置组，其它组静默跳过。
+- 内置 JSON 覆盖高德（139 键）、百度（51 键）、腾讯（92 键）与模块界面项（1 键）。
+- **修复**：`Version.TARGETS` 把百度适配版本写作 22.0.0，设置页因此对 22.0.50 显示 ✘。改为 22.0.50。
+- **修复**：`app/build.ps1` 输出名硬编码为 `MapClean-lsp-v2.1.6.apk`，不随版本号变化。改为从 `Version.NAME` 动态生成。
+- **修复**：`app/AndroidManifest.xml` 版本停在 216 / 2.1.6，同步为 221 / 2.2.1；`module.prop` 同步为 2.2.1 / 221，模块内置更新检查不再报旧版。
+- **清理**：`res/values/strings.xml` 的 `<description>` 去掉写死的 `v2.0.0`（系统「应用信息」可见文案）；删除 `MainActivity.buildFooter()` 里的旧版本行（死代码）。
+
+2.2.0 的 APK 在「自带默认配置」完成前就已构建，包内不含该功能；2.2.1 为补齐发布，模块本体功能与 2.2.0 一致。
+
+## 2.2.0 相比 2.1.5 的主要变化
 
 **本版新增腾讯地图支持**（`com.tencent.map` 11.7.0），并把百度适配推到 **22.0.50**。
 
@@ -33,12 +49,12 @@
 - 悬浮球是应用内浮层，**不申请任何权限**；退出地图即消失。
 - **每个 APK 只处理它对应的那一个地图**，其余两个在打包前就被删掉，不是运行时跳过。
 - ⚠️ 它们用 LSPatch 重新签名，**与官方签名不同**：从官方版换过来必须先卸载官方版（会清除登录态与离线地图）；已经是旧版内置版的可以直接覆盖安装。
-- 下载：<https://github.com/ldxm666/MapAdKiller/releases/tag/v2.2.0> 的 `amap-2.2.0-nonroot.apk`、`baidu-2.2.0-nonroot.apk`、`tencent-2.2.0-nonroot.apk`。
+- 下载：<https://github.com/ldxm666/MapAdKiller/releases/tag/v2.2.1> 的 `amap-2.2.1-nonroot.apk`、`baidu-2.2.1-nonroot.apk`、`tencent-2.2.1-nonroot.apk`。
 - ⚠️ 它们会被**安全中心 / 病毒扫描报红，这是误报**：包里内嵌了一个完整 APK、运行时从 assets 加载 dex、并内置签名绕过 —— 三点都来自重打包机制本身，无法通过"清理"消除。介意的话就用本页的模块版，它不改动任何地图安装包，不会被报毒。
 
 ## 安装与范围
 
-安装 Release 中的 `MapClean-lsp-v2.2.0.apk`，已有用户可覆盖升级。在支持 libxposed API 102 的框架中启用模块，勾选需要处理的地图作用域，再进入模块设置调整开关，修改后强停对应地图并重新打开。
+安装 Release 中的 `MapClean-lsp-v2.2.1.apk`，已有用户可覆盖升级。在支持 libxposed API 102 的框架中启用模块，勾选需要处理的地图作用域，再进入模块设置调整开关，修改后强停对应地图并重新打开。
 
 多数“显示……”设置为开启显示、关闭隐藏；标为“关闭……”或“去除……”的设置则是开启去除规则。工具栏总开关控制整个列表，“仅显示已开启工具”开启后只保留明确选中的工具，未知下发工具不自动加入。使用该模式时请先开启工具栏，再选中步行、骑行等所需项；要继续进入完整目录，请保留“更多工具”。**首页工具栏只有 5 格**，开第 6 个工具不会出现在那里。
 
@@ -64,7 +80,7 @@
 
 备份不包含地图账号、收藏、离线地图或框架作用域，更换设备时需重新勾选地图。发布 APK 与自行构建 APK 若签名不同，无法直接覆盖安装。
 
-本轮主要实测高德 **17.00.0.2005**、百度 **22.0.50**、腾讯 **11.7.0**，Android 16／LSPosed 2.1.1。免 root 内置版另在 Android 16 真机上完成覆盖安装与逐条验证。Vector 2.2 完成公开接口与依赖检查，尚未在该框架实机复测。已知限制：百度面板仍保留约 80px 空白带（原生 `mHideHeight` 几何下限）；腾讯工具宫格第 3 档（完全展开）未取得运行时截图验证，自动化上滑只到中档。未知接口回退原应用行为，不承诺所有地图版本已适配。
+本轮主要实测高德 **17.00.0.2005**、百度 **22.0.50**、腾讯 **11.7.0**，Android 16／LSPosed 2.1.1。免 root 内置版另在 Android 16 真机上完成覆盖安装与逐条验证。Vector 2.2 完成公开接口与依赖检查，尚未在该框架实机复测。已知限制：百度面板仍保留约 80px 空白带（原生 `mHideHeight` 几何下限）；腾讯工具宫格第 3 档（完全展开）未取得运行时截图验证，自动化上滑只到中档；免 root 内置版的「自带默认配置」仅做静态验证（变体包名与官方一致，安装会覆盖已装的内置版，故未做真机验证），内置默认配置的腾讯组仅做静态键集校验。未知接口回退原应用行为，不承诺所有地图版本已适配。
 
 ## 常见问题与反馈
 
