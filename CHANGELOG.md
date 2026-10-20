@@ -1,3 +1,23 @@
+## v2.2.3（versionCode 223）— 悬浮窗按版本分流、装错包诊断
+
+发布日期：2026-10-20。版本码：223。基线 v2.2.2（版本码 222）。
+
+### 新增
+
+- **悬浮窗按安装形态分流**：免 root 内置版默认显示悬浮球；**LSPosed 模块版默认不显示**（悬浮窗主要面向免 root 用户），可在面板「其他 → 悬浮窗入口」手动开启。判定依据是宿主 APK 内是否存在 `assets/lspatch/config.json`，不依赖 root 状态、也不依赖 PackageManager。
+- **`host_mode` 诊断日志**：`event=host_mode pkg=<宿主> embedded=<true|false> kind=<lspatch-embedded|official-or-lsposed>`，用于一眼判断用户装的是官方版还是内置版，方便排查「模块好像把高德签名改了」这类误报。
+
+### 修复
+
+- `host_signer` 在 Android 13+ 读不到证书（`GET_SIGNATURES` 已废弃返回 null）→ 改用 `GET_SIGNING_CERTIFICATES`。
+- 诊断日志误报包名（会打出 `com.miui.contentcatcher` / `com.google.android.webview`）→ 改为从宿主 Context 取包名，并按包名去重。
+- **不再输出证书 DN / 指纹**：LSPatch 会把宿主的 PackageManager 包装成「原版应用」，读到的始终是官方签名 `CN=minimap`，而非磁盘上重签名包的 `CN=xiawanli` —— 该字段具有误导性，已删除。需要确认签名请对 APK 文件本身做校验（`apksigner verify --print-certs`）。
+
+### 说明
+
+- 2.2.3 同时包含 2.2.2 之后的所有修复：未登录用户打不开面板、面板关闭后无法再次打开、版本胶囊卡在「检查中」、部分设备显示「只读」与开关不生效（配置后端本地兜底）。
+
+---
 ## v2.2.2（versionCode 222）— 长按「我的」开面板 + 「省电 / 后台」整组
 
 发布日期：2026-10-20。版本码：222。基线 v2.2.1（版本码 221）。
