@@ -32,7 +32,7 @@
 | 百度地图 | `com.baidu.BaiduMap` |
 | 腾讯地图 | `com.tencent.map` |
 
-> 当前版本 **2.2.2**（versionCode 222），基于 libxposed **API 102**，最低 Android 8.0。
+> 当前版本 **2.2.3-step2**（versionCode 2232），基于 libxposed **API 102**，最低 Android 8.0。
 
 ---
 
