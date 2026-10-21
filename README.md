@@ -4,7 +4,7 @@
 
 **把高德、百度、腾讯地图里那些不想看的东西关掉 —— 只留地图。**
 
-[![Version](https://img.shields.io/badge/version-2.2.2-2ea44f?style=flat-square)](https://github.com/ldxm666/MapAdKiller/releases)
+[![Version](https://img.shields.io/badge/version-2.2.3--step2-2ea44f?style=flat-square)](https://github.com/ldxm666/MapAdKiller/releases)
 [![libxposed](https://img.shields.io/badge/libxposed-API%20102-0969da?style=flat-square)](https://github.com/libxposed/api)
 [![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue?style=flat-square)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Android%208.0%2B-3ddc84?style=flat-square&logo=android&logoColor=white)](https://www.android.com)
