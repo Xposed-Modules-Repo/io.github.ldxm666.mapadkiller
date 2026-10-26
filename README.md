@@ -8,7 +8,8 @@
 [![libxposed](https://img.shields.io/badge/libxposed-API%20102-0969da?style=flat-square)](https://github.com/libxposed/api)
 [![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue?style=flat-square)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Android%208.0%2B-3ddc84?style=flat-square&logo=android&logoColor=white)](https://www.android.com)
-[![Telegram](https://img.shields.io/badge/Telegram-交流群-26A5E4?style=flat-square&logo=telegram&logoColor=white)](https://t.me/MapAdkiller)
+[![Telegram 交流群](https://img.shields.io/badge/Telegram-交流群-26A5E4?style=flat-square&logo=telegram&logoColor=white)](https://t.me/MapAdkiller)
+[![Telegram 通知频道](https://img.shields.io/badge/Telegram-通知频道-0A84C1?style=flat-square&logo=telegram&logoColor=white)](https://t.me/MapAdkillerr)
 [![Stars](https://img.shields.io/github/stars/ldxm666/MapAdKiller?style=flat-square&color=f5c518&logo=github)](https://github.com/ldxm666/MapAdKiller/stargazers)
 
 </div>
@@ -257,7 +258,8 @@
 
 ## 致谢与交流
 
-- 有问题、有建议、想第一时间拿到新版本：**[Telegram 交流群](https://t.me/MapAdkiller)**
+- **通知频道**：[t.me/MapAdkillerr](https://t.me/MapAdkillerr) —— 只发版公告与重要通知，不打扰
+- **交流群**：[t.me/MapAdkiller](https://t.me/MapAdkiller) —— 问题反馈、使用交流
 - Bug 与功能请求：请走 [GitHub Issues](https://github.com/ldxm666/MapAdKiller/issues)
 - 觉得有用的话，点个 **Star** 就是最大的支持 ⭐
 
