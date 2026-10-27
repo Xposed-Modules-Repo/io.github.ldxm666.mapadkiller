@@ -1,3 +1,19 @@
+## 2.2.7 (2270)
+
+### 修复
+- 百度地图首页整页白屏：`applySearchChips` 反射回调组件自己的 `getView` 造成重入，且 `field()` 抛异常后兜底是死代码；改为透传 `chain.proceed()` 返回值、反射走 `fieldOrNull`
+- 百度搜索框下方快捷入口（酒店 / 景点 / 美食 / 厕所 / 加油站）开关失效：这排 chip 有两个宿主，首页收起态挂 `QueryViewHolder` 构造器（RecyclerView 无 id，隐藏后要向上收壳否则留白），搜索页挂 `PoiListHeaderMenu` 三个构造器隐藏 `search_box_line2` / `_content`
+- 百度路线页横幅广告：RN `RNAdvertContainer` 与原生 `PubTravelBaseHomeCard.fetchAd/showAd` 双路断源；只 GONE 容器会留约 1000 px 白块，判据改为「父容器没有别的可见孩子」并向上收 4 层
+- 百度进入地铁规划闪退：穿山甲断点由 `TTAdSdk.init` 改为 `TTAdSdk.start`
+- 高德：隐藏工具栏不再连带隐藏「设置家 / 设置单位」
+
+### 变更
+- 百度地图适配 22.1.0（1660）：30 个锚点全部重测，`NUM_USER_CENTER` 从 0 补成 `0x7f0254eb`，新增 6 个搜索区锚点
+- 百度路线页「探索周边」「特惠打车」拆成独立开关；15 个「创建即隐藏」浮层锚点
+- 百度地图 POI 支持按 13 个类型分别关闭（+ 长尾桶共 15 行），缓存 schema `v8` → `v9`
+- 高德自动巡航灵敏度调整；新增「自动抓取钩子」按钮与日志抓取
+- 去掉全局 `TextView.setText` 钩子，真机 416 帧 0.00% janky
+
 ## 2.2.6 (2260)
 
 ### 修复

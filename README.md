@@ -4,7 +4,7 @@
 
 **把高德、百度、腾讯地图里那些不想看的东西关掉 —— 只留地图。**
 
-[![Version](https://img.shields.io/badge/version-2.2.6-2ea44f?style=flat-square)](https://github.com/ldxm666/MapAdKiller/releases)
+[![Version](https://img.shields.io/badge/version-2.2.7-2ea44f?style=flat-square)](https://github.com/ldxm666/MapAdKiller/releases)
 [![libxposed](https://img.shields.io/badge/libxposed-API%20102-0969da?style=flat-square)](https://github.com/libxposed/api)
 [![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue?style=flat-square)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Android%208.0%2B-3ddc84?style=flat-square&logo=android&logoColor=white)](https://www.android.com)
@@ -33,7 +33,7 @@
 | 百度地图 | `com.baidu.BaiduMap` |
 | 腾讯地图 | `com.tencent.map` |
 
-> 当前版本 **2.2.6**（versionCode 2260），基于 libxposed **API 102**，最低 Android 8.0。
+> 当前版本 **2.2.7**（versionCode 2270），基于 libxposed **API 102**，最低 Android 8.0。
 
 ---
 
@@ -43,8 +43,9 @@
 
 | 包 | 文件名 | 适合谁 | 需要 root 吗 |
 | --- | --- | --- | --- |
-| **免 root 内置版** | `Amap-2.2.6-nonroot-embedded.apk`（高德免 root 内置版） | 普通用户，手机上没装框架 | **不需要** |
-| **模块版**（推荐） | `MapClean-lsp-v2.2.6.apk` | 已经在用 LSPosed / Vector 的用户 | 需要框架 |
+| **免 root 内置版（高德）** | `Amap-2.2.7-nonroot-embedded.apk` | 普通用户，手机上没装框架 | **不需要** |
+| **免 root 内置版（百度）** | `Baidu-2.2.7-nonroot-embedded.apk` | 同上，百度地图 | **不需要** |
+| **模块版**（推荐） | `MapClean-lsp-v2.2.7.apk` | 已经在用 LSPosed / Vector 的用户 | 需要框架 |
 
 **一句话区别**：内置版把模块直接并进了地图本体，装完就是成品，代价是包体大、签名变了；模块版是一个几 MB 的小模块，靠框架注入，三个地图共用一份配置。
 
@@ -83,7 +84,7 @@
 
 ### 免 root 内置版（推荐）
 
-1. 下载 `Amap-2.2.6-nonroot-embedded.apk`（高德免 root 内置版）。
+1. 下载 `Amap-2.2.7-nonroot-embedded.apk`（高德免 root 内置版）。
 2. **先卸载手机上原有的高德地图**（内置版重新签过名，和官方签名冲突，无法覆盖安装）。
    > 卸载会清掉登录状态和已下载的离线地图，装好重新登录即可。
 3. 安装，打开高德地图：第一次是**纯原生**，等它自己抓完数据并弹窗自动重启（见上一节），
@@ -94,7 +95,7 @@
 
 ### 模块版（LSPosed）
 
-1. 安装 `MapClean-lsp-v2.2.6.apk`。
+1. 安装 `MapClean-lsp-v2.2.7.apk`。
 2. 在 LSPosed / Vector 里**启用模块**，并把**需要处理的地图 App 勾进作用域**
    （高德 `com.autonavi.minimap`、百度 `com.baidu.BaiduMap`、腾讯 `com.tencent.map`，勾哪个管哪个）。
 3. **重启目标地图 App**（强制停止后重新打开），然后长按底部「我的」标签约 1 秒。
@@ -233,6 +234,17 @@
 ---
 
 ## 更新日志
+
+### 2.2.7（versionCode 2270）
+
+- **百度地图 22.1.0（1660）适配**：30 个锚点全部重测。
+- 修复首页整页白屏（反射重入 + 兜底分支是死代码）。
+- 搜索框下方快捷入口（酒店 / 景点 / 美食 / 厕所 / 加油站）开关恢复有效：首页收起态与搜索页两个宿主都覆盖。
+- 路线页横幅广告（RN + 原生两套渲染）断源，且不留白块；「探索周边」「特惠打车」改为独立开关。
+- 修复进入地铁规划时闪退（穿山甲断点从 `TTAdSdk.init` 改为 `TTAdSdk.start`）。
+- 地图 POI 支持按 13 个类型分别关闭。
+- 去掉全局 `setText` 钩子，真机 416 帧 0.00% janky。
+- **高德**：修复隐藏工具栏连带隐藏「设置家 / 设置单位」；自动巡航更灵敏；新增「自动抓取钩子」按钮与日志抓取，方便反馈问题。
 
 ### 2.2.6（versionCode 2260）
 
