@@ -4,7 +4,7 @@
 
 **把高德、百度、腾讯地图里那些不想看的东西关掉 —— 只留地图。**
 
-[![Version](https://img.shields.io/badge/version-2.2.7-2ea44f?style=flat-square)](https://github.com/ldxm666/MapAdKiller/releases)
+[![Version](https://img.shields.io/badge/version-2.2.8-2ea44f?style=flat-square)](https://github.com/ldxm666/MapAdKiller/releases)
 [![libxposed](https://img.shields.io/badge/libxposed-API%20102-0969da?style=flat-square)](https://github.com/libxposed/api)
 [![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue?style=flat-square)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Android%208.0%2B-3ddc84?style=flat-square&logo=android&logoColor=white)](https://www.android.com)
@@ -33,7 +33,7 @@
 | 百度地图 | `com.baidu.BaiduMap` |
 | 腾讯地图 | `com.tencent.map` |
 
-> 当前版本 **2.2.7**（versionCode 2270），基于 libxposed **API 102**，最低 Android 8.0。
+> 当前版本 **2.2.8**（versionCode 2280），基于 libxposed **API 102**，最低 Android 8.0。
 
 ---
 
@@ -43,9 +43,9 @@
 
 | 包 | 文件名 | 适合谁 | 需要 root 吗 |
 | --- | --- | --- | --- |
-| **免 root 内置版（高德）** | `Amap-2.2.7-nonroot-embedded.apk` | 普通用户，手机上没装框架 | **不需要** |
-| **免 root 内置版（百度）** | `Baidu-2.2.7-nonroot-embedded.apk` | 同上，百度地图 | **不需要** |
-| **模块版**（推荐） | `MapClean-lsp-v2.2.7.apk` | 已经在用 LSPosed / Vector 的用户 | 需要框架 |
+| **免 root 内置版（高德）** | `Amap-2.2.8-nonroot-embedded.apk` | 普通用户，手机上没装框架 | **不需要** |
+| **免 root 内置版（百度）** | `Baidu-2.2.8-nonroot-embedded.apk` | 同上，百度地图 | **不需要** |
+| **模块版**（推荐） | `MapClean-lsp-v2.2.8.apk` | 已经在用 LSPosed / Vector 的用户 | 需要框架 |
 
 **一句话区别**：内置版把模块直接并进了地图本体，装完就是成品，代价是包体大、签名变了；模块版是一个几 MB 的小模块，靠框架注入，三个地图共用一份配置。
 
@@ -84,7 +84,7 @@
 
 ### 免 root 内置版（推荐）
 
-1. 下载 `Amap-2.2.7-nonroot-embedded.apk`（高德免 root 内置版）。
+1. 下载 `Amap-2.2.8-nonroot-embedded.apk`（高德免 root 内置版）。
 2. **先卸载手机上原有的高德地图**（内置版重新签过名，和官方签名冲突，无法覆盖安装）。
    > 卸载会清掉登录状态和已下载的离线地图，装好重新登录即可。
 3. 安装，打开高德地图：第一次是**纯原生**，等它自己抓完数据并弹窗自动重启（见上一节），
@@ -95,7 +95,7 @@
 
 ### 模块版（LSPosed）
 
-1. 安装 `MapClean-lsp-v2.2.7.apk`。
+1. 安装 `MapClean-lsp-v2.2.8.apk`。
 2. 在 LSPosed / Vector 里**启用模块**，并把**需要处理的地图 App 勾进作用域**
    （高德 `com.autonavi.minimap`、百度 `com.baidu.BaiduMap`、腾讯 `com.tencent.map`，勾哪个管哪个）。
 3. **重启目标地图 App**（强制停止后重新打开），然后长按底部「我的」标签约 1 秒。
@@ -234,6 +234,17 @@
 ---
 
 ## 更新日志
+
+### 2.2.8（versionCode 2280）
+
+- **百度路线页「开始导航」消失**：收壳会连带把整条底栏 GONE 掉，且实例被宿主复用后再也不回来。底栏现在不参与收壳。
+- **百度面板「只读」误报**：服务没绑上就判死，实际能写。改为先做一次真实写入探测。
+- **百度内置版日志抓取修好**：以前 `CaptureLog` 是空实现，点了没反应。
+- **高德自动巡航触发值可调**：新增两个滑块（2–30 km/h、2–30 秒），面板与模块 App 互通。
+- **走路也能触发巡航**：距离/精度门槛跟着触发速度走，不再固定 8 km/h / 60 米。
+- **抓取完成提示只弹一次**（以前每次打开都弹）。
+- 模块 App：已安装应用排前、未安装行不再显示固定「推荐版本」、三行都显示原生图标。
+- 滑块写入失败会退回原值并提示「未连接地图」，不再静默丢弃。
 
 ### 2.2.7（versionCode 2270）
 
