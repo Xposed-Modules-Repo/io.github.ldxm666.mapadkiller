@@ -4,7 +4,7 @@
 
 **把高德、百度、腾讯地图里那些不想看的东西关掉 —— 只留地图。**
 
-[![Version](https://img.shields.io/badge/version-2.2.8-2ea44f?style=flat-square)](https://github.com/ldxm666/MapAdKiller/releases)
+[![Version](https://img.shields.io/badge/version-2.3.1-2ea44f?style=flat-square)](https://github.com/ldxm666/MapAdKiller/releases)
 [![libxposed](https://img.shields.io/badge/libxposed-API%20102-0969da?style=flat-square)](https://github.com/libxposed/api)
 [![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue?style=flat-square)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Android%208.0%2B-3ddc84?style=flat-square&logo=android&logoColor=white)](https://www.android.com)
@@ -33,7 +33,7 @@
 | 百度地图 | `com.baidu.BaiduMap` |
 | 腾讯地图 | `com.tencent.map` |
 
-> 当前版本 **2.2.8**（versionCode 2280），基于 libxposed **API 102**，最低 Android 8.0。
+> 当前版本 **2.3.1**（versionCode 2301），基于 libxposed **API 102**，最低 Android 8.0。
 
 ---
 
@@ -43,9 +43,10 @@
 
 | 包 | 文件名 | 适合谁 | 需要 root 吗 |
 | --- | --- | --- | --- |
-| **免 root 内置版（高德）** | `Amap-2.2.8-nonroot-embedded.apk` | 普通用户，手机上没装框架 | **不需要** |
-| **免 root 内置版（百度）** | `Baidu-2.2.8-nonroot-embedded.apk` | 同上，百度地图 | **不需要** |
-| **模块版**（推荐） | `MapClean-lsp-v2.2.8.apk` | 已经在用 LSPosed / Vector 的用户 | 需要框架 |
+| **免 root 内置版（高德）** | `Amap-2.3.1-nonroot-embedded.apk` | 普通用户，手机上没装框架 | **不需要** |
+| **免 root 内置版（百度）** | `Baidu-2.3.1-nonroot-embedded.apk` | 同上，百度地图 | **不需要** |
+| **免 root 内置版（腾讯）** | `Tencent-2.3.1-nonroot-embedded.apk` | 同上，腾讯地图 | **不需要** |
+| **模块版**（推荐） | `MapClean-lsp-v2.3.1.apk` | 已经在用 LSPosed / Vector 的用户 | 需要框架 |
 
 **一句话区别**：内置版把模块直接并进了地图本体，装完就是成品，代价是包体大、签名变了；模块版是一个几 MB 的小模块，靠框架注入，三个地图共用一份配置。
 
@@ -84,7 +85,7 @@
 
 ### 免 root 内置版（推荐）
 
-1. 下载 `Amap-2.2.8-nonroot-embedded.apk`（高德免 root 内置版）。
+1. 下载 `Amap-2.3.1-nonroot-embedded.apk`（高德免 root 内置版）。
 2. **先卸载手机上原有的高德地图**（内置版重新签过名，和官方签名冲突，无法覆盖安装）。
    > 卸载会清掉登录状态和已下载的离线地图，装好重新登录即可。
 3. 安装，打开高德地图：第一次是**纯原生**，等它自己抓完数据并弹窗自动重启（见上一节），
@@ -95,7 +96,7 @@
 
 ### 模块版（LSPosed）
 
-1. 安装 `MapClean-lsp-v2.2.8.apk`。
+1. 安装 `MapClean-lsp-v2.3.1.apk`。
 2. 在 LSPosed / Vector 里**启用模块**，并把**需要处理的地图 App 勾进作用域**
    （高德 `com.autonavi.minimap`、百度 `com.baidu.BaiduMap`、腾讯 `com.tencent.map`，勾哪个管哪个）。
 3. **重启目标地图 App**（强制停止后重新打开），然后长按底部「我的」标签约 1 秒。
@@ -234,6 +235,40 @@
 ---
 
 ## 更新日志
+
+### 2.3.1（versionCode 2301）— 高德冷启动 / 百度配置 / 公告通道
+
+发布日期：2026-11-03。版本码：2301。基线 v2.2.8（版本码 2280）。
+
+### 修复
+
+- **高德冷启动 6.5 秒 → 1 秒以内**：根因是本模块自身的 hook 无限递归。`AmapNativeHome` 拦截 `k84.f()`，其内部经 `AmapData.toolboxRaw → toolbox → applyColorIcons → colorIconUrl → defaultSlot` 反射回调 `k84.f()`，再次进入同一个 hook，递归约 2000 层；每层都 `new JSONObject(5.5KB)` 再拼字符串，涨到 `StackOverflowError` 被 `catch (Throwable)` 吞掉才停。实测 `onCreate` 6538ms → 127~659ms，冷启动 `TotalTime` 7174ms → 1170ms
+- **高德开屏页恢复**：之前误当广告拦截。`SplashActivity` 是 `activity-alias` 指向 `NewMapActivity`，白底来自主题 `windowBackgroundFallback`，属高德自身界面
+- **百度配置无法保存**（三次反馈）：读路径在 hook 安装期把 LSPatch 只读 remote 永久定案，44 个真实键全部读不到；`DefaultConfig` 因 `mapadkiller.App` 空桩 `service==null` 早退，140 条默认值灌进 remote 且 `_defaults_applied` 从不落盘；`invalidate()` 不重置后端定案。三处全修，`write()` 增加回读自校验
+- **腾讯悬浮球消失**：浮层挂在首启 `WelcomeActivity`，该页 `finish()` 后浮层随之销毁。改为跟随宿主所有 Activity 的 `onResume`，并新增 `OnGlobalLayoutListener` 哨兵（腾讯首启是同 Activity 换内容，不发生命周期回调）
+- **腾讯面板「只读」**：`BaiduMineEntry.install()` 对任何被注入的包无条件 `Vendor.host(pkg)`，把宿主身份改写成百度/WebView，导致厂商判别失效、后端判定 NONE。`Vendor.host` 加白名单且定案不改写
+- **腾讯配置写进两个存储**：四条 Context 反射在宿主 Application 创建前同时为空，同一份默认值既写 `shared_prefs` 又写 `lspatch-xposed-remote.db`。改为「直给 Context 优先」，反射仅兜底
+- **全新安装默认不干净**：JSON 中 `tab_*` 键不存在、部分键为 `null`（跳过不写），读取侧兜底硬编码 `true`，导致干净安装全部可见。JSON 补齐、`Spec.defaultVisible` 对齐、`Cfg.visible/tabVisible` 走 Spec
+
+### 新增
+
+- **服务器公告通道**：远程推送、首次必弹可关闭弹窗、自绘浮层（规避宿主 `windowBackgroundFallback` 纯黑 9-patch 黑边）、入场 150ms / 退场 130ms 动画、HMAC-SHA256 签名校验、分档节流
+- **「检查更新」改从自有服务器读取**，不再依赖 GitHub API
+- `HookGuard`：单 hook 连续失败 3 次自动停用，`LinkageError` 立即熔断
+- `Perf`：全 hook 自动计时，超阈值输出排行榜
+
+### 变更
+
+- 百度地点详情页 17 类推广位清理（数据层摘卡，不留白），各块独立开关
+- 百度面板重排为 6 个 chip；「赞赏支持」点击区放大到 48dp
+- 抓取：成功 Toast/通知 + 1.2 秒自动退出；失败不退出可重试
+- 腾讯性能：首页视图树转储收进 debug（日志 443~565 行 → 9~14 行，-80%）；悬浮钩子只装主进程（3 → 1）；布局哨兵 250ms 节流
+- `_defaults_rev` 版本迁移：只填缺失键，不覆盖用户显式值，不每次启动重放
+
+### 已知未包含
+
+- 首页工具面板紧凑排列（原方案会压塌布局，已回退）
+- 腾讯 40fps 上限未动：实测官方原版 39.4fps / 内置版 40.7fps，上限来自 SDK 自身 `limitFrame`
 
 ### 2.2.8（versionCode 2280）
 
