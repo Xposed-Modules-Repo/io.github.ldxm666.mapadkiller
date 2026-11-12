@@ -4,7 +4,7 @@
 
 **高德、百度、腾讯地图的广告精简与界面定制。**
 
-[![Version](https://img.shields.io/badge/version-2.3.5-2ea44f?style=flat-square)](https://github.com/ldxm666/MapAdKiller/releases/tag/v2.3.5)
+[![Version](https://img.shields.io/badge/version-2.3.5.step2-2ea44f?style=flat-square)](https://github.com/ldxm666/MapAdKiller/releases/tag/v2.3.5.step2)
 [![libxposed](https://img.shields.io/badge/libxposed-API%20102-0969da?style=flat-square)](https://github.com/libxposed/api)
 [![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue?style=flat-square)](LICENSE)
 [![Telegram 交流群](https://img.shields.io/badge/Telegram-交流群-26A5E4?style=flat-square)](https://t.me/MapAdkiller)
@@ -14,7 +14,7 @@
 
 ## 当前版本
 
-**2.3.5 · versionCode 2305 · 2026-11-11**。支持免 root 内置版和现代 Xposed 模块版，各地图单独配置，可备份与恢复。
+**2.3.5.step2 · versionCode 23052 · 2026-11-13**。支持免 root 内置版和现代 Xposed 模块版，各地图单独配置，可备份与恢复。
 
 | 地图 | 包名 | 本轮适配基线 |
 | --- | --- | --- |
@@ -25,7 +25,16 @@
 
 其它地图版本不保证锚点一致。模块最低 Android 8.0，并需要支持 API 102 的框架；内置版使用 LSPatch，需要 Android 9.0 或更高版本，且不能低于宿主自身要求。
 
-## 2.3.5 更新重点
+## 2.3.5.step2 更新重点
+
+- 高德开屏广告：在原有广告请求与缓存判断之外，增加广告素材下载、启动阶段实时请求、图片/视频广告视图、本地已存广告素材四条路径的拦截。
+- 高德开屏广告：补充 `sendSplashScreen` 双参数重载的拦截，2.3.5 仅覆盖三参数重载。
+- 高德开屏广告：每次启动清理 `files/splash/` 下已下载的素材文件，目录内其他配置不动。
+- 拦截范围仍由「拦截开屏广告」开关控制（默认开启）；关闭后恢复宿主原始行为。
+- 品牌开屏页、首页、搜索、地图标注、导航均未改动；百度、腾讯变体仅同步版本号。
+- 实测（Android 16 / 内置版）：冷启动 1005 ms / 1032 ms（2.3.5 基线 1533–1643 ms），拦截全部命中，本地广告素材计数为 0，无白屏、无 ANR。技术细节见 [开屏分析](docs/SPLASH-AD-17.02-ANALYSIS.md)。
+
+## 2.3.5 更新重点（上一版）
 
 - **高德打开就生效**：修复部分用户第一次打开地图时，设置已经打开、功能却没有生效的问题。
 - **高德工具宫格不再留大块空白**：隐藏的工具会让出位置；底栏全部关闭后，驾车、公交、步行等工具会靠近底部，保留搜索框和系统手势区域。
@@ -37,11 +46,11 @@
 
 高德标注分类的用法：先打开“兴趣点”总开关，再选择需要显示的类别，修改后强制停止并重开高德。总开关关闭时仍是全部隐藏。分类只处理已识别的业务标注，通用楼宇、未知图标等可能保留。
 
-详细说明见 [2.3.5 更新说明](https://github.com/ldxm666/MapAdKiller/blob/v2.3.5/docs/RELEASE-2.3.5.md)、[测试记录](https://github.com/ldxm666/MapAdKiller/blob/v2.3.5/docs/VALIDATION-2.3.5.md) 和 [更新日志](https://github.com/ldxm666/MapAdKiller/blob/v2.3.5/CHANGELOG.md)。Kotlin 主源码迁移、设置 UI 重构和导航栏缩放由 2.3.3 引入，2.3.5 继续保留。
+详细说明见 [2.3.5 更新说明](docs/RELEASE-2.3.5.md)、[测试记录](docs/VALIDATION-2.3.5.md) 和 [更新日志](CHANGELOG.md)。Kotlin 主源码迁移、设置 UI 重构和导航栏缩放由 2.3.3 引入，2.3.5 继续保留。
 
 ## 下载
 
-统一从 [v2.3.5 Release](https://github.com/ldxm666/MapAdKiller/releases/tag/v2.3.5) 下载。模块仓库另提供 [模块版 2305-2.3.5](https://github.com/Xposed-Modules-Repo/io.github.ldxm666.mapadkiller/releases/tag/2305-2.3.5)。
+统一从 [v2.3.5.step2 Release](https://github.com/ldxm666/MapAdKiller/releases/tag/v2.3.5.step2) 下载。模块仓库另提供 [模块版 2305-2.3.5](https://github.com/Xposed-Modules-Repo/io.github.ldxm666.mapadkiller/releases/tag/2305-2.3.5)（2.3.5 基线；本次 step2 的安装包以主仓库 Release 为准）。
 
 | 文件 | 安装方式 |
 | --- | --- |
@@ -111,10 +120,18 @@ adb install-multiple -r base.apk split_config.arm64_v8a.apk split_config.xxxhdpi
 - **Play 版**：独立构建、四包签名/结构及功能 DEX 对照通过；本轮未重新安装 Play 整包逐项实机测试。
   - 百度部分详情页推荐/FAQ/团购横幅仍有未覆盖路径；高德启动品牌 Logo 的独立跳过仍未解决，广告请求和缓存广告拦截已纳入 2.3.5 测试包。首页原生工具宫格最多两行，更多入口请使用“更多工具”。
 
+## Star 趋势
+
+<div align="center">
+
+[![Star History Chart](https://api.star-history.com/svg?repos=ldxm666/MapAdKiller&type=Date)](https://star-history.com/#ldxm666/MapAdKiller&Date)
+
+</div>
+
 ## 构建、反馈与交流
 
-- 构建依赖与命令：[BUILD.md](https://github.com/ldxm666/MapAdKiller/blob/v2.3.5/BUILD.md)。主源码使用 Kotlin 1.9.23，保留必要 Java 编译桩和测试。
-- 历史变更：[CHANGELOG.md](https://github.com/ldxm666/MapAdKiller/blob/v2.3.5/CHANGELOG.md)；本次验证：[VALIDATION-2.3.4.md](https://github.com/ldxm666/MapAdKiller/blob/v2.3.5/docs/VALIDATION-2.3.4.md)。
+- 构建依赖与命令：[BUILD.md](BUILD.md)。主源码使用 Kotlin 1.9.23，保留必要 Java 编译桩和测试。
+- 历史变更：[CHANGELOG.md](CHANGELOG.md)；本次验证：[SPLASH-AD-17.02-ANALYSIS.md](docs/SPLASH-AD-17.02-ANALYSIS.md)。
 - [GitHub Issues](https://github.com/ldxm666/MapAdKiller/issues)：附地图版本、系统版本、模块/内置方式、开关状态与复现步骤；日志先去除账号、位置、订单与支付信息。
 - [Telegram 通知频道](https://t.me/MapAdkillerr) · [Telegram 交流群](https://t.me/MapAdkiller)。
 
